@@ -1,6 +1,5 @@
 module.exports = function (app) {
-  var maincontroller = require('../app/controllers/maincontroller')
-  app.post('/upload', maincontroller.upload)
-  app.get('/', maincontroller.home)
-  app.get('/detail/:imageid', maincontroller.detail)
+  var maincontroller = require('../app/controllers/maincontroller');
+  app.get('/gethostname', maincontroller.getHostname)
+  app.get('/', maincontroller.list)
 }

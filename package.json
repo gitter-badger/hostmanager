@@ -1,6 +1,6 @@
 {
-    "description": "Takes images with title and description and saves images of desired dimensions to amazon s3"
-  , "version": "0.0.2"
+    "description": "Application to set hostname based on server domain"
+  , "version": "0.0.1"
   , "private": false
   , "author": "James Singh, AceTravels.com"
   , "engines": {
@@ -15,15 +15,8 @@
       "express": "latest"
     , "mongoose": "3.5.x"
     , "connect-mongo": "latest"
-    , "formidable": "*"
-    , "util": "*"
-    , "aws-sdk":"*"
-    , "gm":"*"
+    , "url": "latest"
   }
   , "devDependencies": {
-        "supertest": "latest"
-      , "should": "latest"
-      , "mocha": "latest"
-      , "nodemon": "latest"
     }
 }
