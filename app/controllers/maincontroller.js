@@ -9,6 +9,7 @@ exports.getHostname = function(req, res){
   var q = url.parse(req.url,true).query;
   console.log("Q: "+JSON.stringify(q));
   var domain = q.domain;
+  var name = domain.split(".")[0];
   console.log("Domain: "+domain)
   Hostname.findOne({"domain":domain}, function(err, data){
     if(err) throw err;
@@ -32,11 +33,10 @@ exports.getHostname = function(req, res){
         if(err) throw err;
       });
     }
-    var hostname = "host"+next+"."+domain;
+    var hostname = name+next+"-acetravels";
     console.log("Output: "+hostname);
-    res.json({
-      "hostname":hostname
-    });
+    res.write(hostname);
+    res.end();
   })
 }
 
