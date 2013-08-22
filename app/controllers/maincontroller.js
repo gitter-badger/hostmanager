@@ -33,7 +33,7 @@ exports.getHostname = function(req, res){
         if(err) throw err;
       });
     }
-    var hostname = name+next+"-acetravels";
+    var hostname = name+next+"."+domain;
     console.log("Output: "+hostname);
     res.write(hostname);
     res.end();
