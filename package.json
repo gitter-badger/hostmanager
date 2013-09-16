@@ -16,7 +16,6 @@
     , "mongoose": "3.5.x"
     , "connect-mongo": "latest"
     , "url": "latest"
-    , "child_process": "latest"
   }
   , "devDependencies": {
     }
