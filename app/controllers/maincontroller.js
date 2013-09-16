@@ -64,7 +64,7 @@ function configNagios(domain, private_ip, alias){
 		data = data.replace(/#ALIAS#/g,alias);	
 		fs.writeFile(config.nagios_config_path+alias+'.cfg', data, 'utf8', function (err) {
 			if (err) return console.log(err);
-			exec("service nagios restart", function(error, stdout, stderr){
+			exec("service nagios3 restart", function(error, stdout, stderr){
 				if(error){
 					console.log("Error restarting nagios");
 				} else {
