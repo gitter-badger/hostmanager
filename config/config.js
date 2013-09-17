@@ -9,5 +9,11 @@ module.exports = {
     , nagios_config_path: '/nagios/'
   },
   test: {},
-  production: {}
+  production: {
+    db: 'mongodb://dbm.cloud.acetravels.com/hostmaster'
+    , root: rootPath
+    , nagios_config_template_path: '/etc/scripts/nagios-templates/'
+    , nagios_config_path: '/etc/nagios3/conf.d/'
+  },
 }
+
