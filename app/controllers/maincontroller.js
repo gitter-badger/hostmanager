@@ -14,7 +14,6 @@ exports.getHostname = function(req, res){
   var q = url.parse(req.url,true).query;
   console.log("Q: "+JSON.stringify(q));
   var domain = q.domain;
-  var private_ip = q.private_ip;
   var name = domain.split(".")[0];
   console.log("Domain: "+domain)
   Hostname.findOne({"domain":domain}, function(err, data){
@@ -42,7 +41,7 @@ exports.getHostname = function(req, res){
     var alias = name+next;
     var hostname = alias+"."+domain;
     console.log("Output: "+hostname);
-    configNagios(domain, private_ip, alias);
+    configNagios(domain, alias);
     res.write(hostname);
     res.end();
   })
@@ -54,13 +53,13 @@ exports.list = function(req, res){
   })
 }
 
-function configNagios(domain, private_ip, alias){
+function configNagios(domain, alias){
 	var filename = domain.replace(/\./g,'_');
 	fs.readFile(config.nagios_config_template_path+filename+'.cfg', 'utf8', function (err,data) {
 		if (err) {
 			return console.log(err);
 		}
-		data = data.replace(/#PRIVATE_IP#/g, private_ip);
+		data = data.replace(/#DOMAIN_NAME#/g, domain);
 		data = data.replace(/#ALIAS#/g,alias);	
 		fs.writeFile(config.nagios_config_path+alias+'.cfg', data, 'utf8', function (err) {
 			if (err) return console.log(err);
