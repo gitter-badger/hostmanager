@@ -86,6 +86,7 @@ function setupMRTG(alias, domain, cb) {
     createMRTGConfigFileForHost(alias, function(){
       writeToSidePhp(alias, domain, function(){
         console.log("***** MRTG setup complete *****")
+        cb()
       })
     })
   })
@@ -173,6 +174,7 @@ function writeToSidePhp(alias, domain, cb) {
       sidePhpData = sidePhpData.replace(/<!#MRTG#>/g, "<!#MRTG#>"+data);
       fs.writeFile(side_php_path, sidePhpData, 'utf8', function (err) {
         console.log(side_php_path + " overridden.")
+        cb()
       })
     })
   })
