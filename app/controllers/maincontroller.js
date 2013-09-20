@@ -81,11 +81,11 @@ function configNagios(domain, alias){
 
 // Function to setup changes related to MRTG for a provided hostname, and generated alias.
 function setupMRTG(alias, hostname, cb) {
-  console.out("***** Starting MRTG config *****")
+  console.log("***** Starting MRTG config *****")
   createRequiredFoldersForMRTG(function (){
     createMRTGConfigFileForHost(alias, function(){
       writeToSidePhp(alias, domain, function(){
-        console.out("***** MRTG setup complete *****")
+        console.log("***** MRTG setup complete *****")
       })
     })
   })
