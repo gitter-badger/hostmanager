@@ -65,7 +65,7 @@ function configNagios(domain, alias){
 			if (err) {
         return console.log(err);
       } else {
-        setupMRTG(alias, function(){
+        setupMRTG(alias, domain, function(){
           exec("service nagios3 restart", function(error, stdout, stderr){
             if(error){
               console.log("Error restarting nagios");
@@ -80,7 +80,7 @@ function configNagios(domain, alias){
 }
 
 // Function to setup changes related to MRTG for a provided hostname, and generated alias.
-function setupMRTG(alias, hostname, cb) {
+function setupMRTG(alias, domain, cb) {
   console.log("***** Starting MRTG config *****")
   createRequiredFoldersForMRTG(alias, function (){
     createMRTGConfigFileForHost(alias, function(){
@@ -126,7 +126,7 @@ function createRequiredFoldersForMRTG(alias, cb) {
 // adds necessary folder paths and saves to config.mrtg_path as <alias>.cfg, for the
 // given hostname/alias
 function createMRTGConfigFileForHost(alias, cb) {
-  
+
   var html_dir = config.mrtg_config_html_folder_path+alias;
   var image_dir = html_dir+"/images";
   var log_dir = html_dir+"/log";
