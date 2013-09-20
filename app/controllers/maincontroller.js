@@ -106,15 +106,15 @@ function createRequiredFoldersForMRTG(alias, cb) {
 
   exec("mkdir "+html_dir, function(error, stdout, stderr){
     if(error) throw error;
-    console.log("Created "+main_folder_path);
+    console.log("Created "+html_dir);
 
     exec("mkdir "+image_dir, function(error, stdout, stderr){
       if(error) throw error;
-      console.log("Created "+images_folder_path);
+      console.log("Created "+image_dir);
 
       exec("mkdir "+log_dir, function(error, stdout, stderr){
         if(error) throw error;
-        console.log("Created "+log_folder_path);
+        console.log("Created "+log_dir);
 
         cb();
       })    
