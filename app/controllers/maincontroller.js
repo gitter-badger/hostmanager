@@ -126,6 +126,10 @@ function createRequiredFoldersForMRTG(alias, cb) {
 // adds necessary folder paths and saves to config.mrtg_path as <alias>.cfg, for the
 // given hostname/alias
 function createMRTGConfigFileForHost(alias, cb) {
+  
+  var html_dir = config.mrtg_config_html_folder_path+alias;
+  var image_dir = html_dir+"/images";
+  var log_dir = html_dir+"/log";
 
   // Read the template config file from config.mrtg_config_template_path, and replace
   // variables #HTML_DIR#, #IMAGE_DIR# and #LOG_DIR# with appropriate folder paths
