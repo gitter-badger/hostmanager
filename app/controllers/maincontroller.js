@@ -117,9 +117,9 @@ function createRequiredFoldersForMRTG(alias, cb) {
         console.log("Created "+log_folder_path);
 
         cb();
-      }      
-    }      
-  }
+      })    
+    })   
+  })
 }
 
 // Reads template config mrtg-config-template.cfg from config.mrtg_config_template_path
