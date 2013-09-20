@@ -82,7 +82,7 @@ function configNagios(domain, alias){
 // Function to setup changes related to MRTG for a provided hostname, and generated alias.
 function setupMRTG(alias, hostname, cb) {
   console.log("***** Starting MRTG config *****")
-  createRequiredFoldersForMRTG(function (){
+  createRequiredFoldersForMRTG(alias, function (){
     createMRTGConfigFileForHost(alias, function(){
       writeToSidePhp(alias, domain, function(){
         console.log("***** MRTG setup complete *****")
@@ -95,8 +95,8 @@ function setupMRTG(alias, hostname, cb) {
 // 1) A folder by alias name at config.mrtg_config_folder_path
 // 2) A folder named images inside the alias folder
 // 3) A folder named log inside the alias folder
-function createRequiredFoldersForMRTG(cb) {
-  var html_dir = config.mrtg_config_html_folder_path;
+function createRequiredFoldersForMRTG(alias, cb) {
+  var html_dir = config.mrtg_config_html_folder_path+alias;
   var image_dir = html_dir+"/images";
   var log_dir = html_dir+"/log";
 
