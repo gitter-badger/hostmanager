@@ -6,7 +6,7 @@ module.exports = {
     db: 'mongodb://localhost/hostmaster'
     , root: rootPath
     , nagios_config_template_path: '/etc/scripts/nagios-templates/'
-    , mrtg_config_template_path: '/etc/scripts/nagios-templates/'
+    , mrtg_config_template_path: '/etc/scripts/mrtg-templates/'
     , nagios_config_path: '/nagios/'
     , mrtg_config_html_folder_path: '/var/www/html/mrtg/'
     , mrtg_path: '/opt/mrtg/'
@@ -18,7 +18,7 @@ module.exports = {
     db: 'mongodb://dbm.cloud.acetravels.com/hostmaster'
     , root: rootPath
     , nagios_config_template_path: '/etc/scripts/nagios-templates/'
-    , mrtg_config_template_path: '/etc/scripts/nagios-templates/'
+    , mrtg_config_template_path: '/etc/scripts/mrtg-templates/'
     , nagios_config_path: '/etc/nagios3/conf.d/'
     , mrtg_config_html_folder_path: '/var/www/html/mrtg/'
     , mrtg_path: '/opt/mrtg/'
