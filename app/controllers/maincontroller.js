@@ -97,8 +97,8 @@ function setupMRTG(alias, hostname, cb) {
 // 3) A folder named log inside the alias folder
 function createRequiredFoldersForMRTG(cb) {
   var html_dir = config.mrtg_config_html_folder_path;
-  var image_dir = html_dir+"/"+images;
-  var log_dir = html_dir+"/"+log;
+  var image_dir = html_dir+"/images";
+  var log_dir = html_dir+"/log";
 
   exec("mkdir "+html_dir), function(error, stdout, stderr){
     if(error) throw error;
