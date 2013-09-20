@@ -100,6 +100,10 @@ function createRequiredFoldersForMRTG(alias, cb) {
   var image_dir = html_dir+"/images";
   var log_dir = html_dir+"/log";
 
+  console.log("HtmlDir: "+html_dir);
+  console.log("ImageDir: "+image_dir);
+  console.log("LogDir: "+log_dir);
+
   exec("mkdir "+html_dir), function(error, stdout, stderr){
     if(error) throw error;
     console.log("Created "+main_folder_path);
