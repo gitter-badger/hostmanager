@@ -62,14 +62,103 @@ function configNagios(domain, alias){
 		data = data.replace(/#DOMAIN_NAME#/g, domain);
 		data = data.replace(/#ALIAS#/g,alias);	
 		fs.writeFile(config.nagios_config_path+alias+'.cfg', data, 'utf8', function (err) {
-			if (err) return console.log(err);
-			exec("service nagios3 restart", function(error, stdout, stderr){
-				if(error){
-					console.log("Error restarting nagios");
-				} else {
-					console.log("Nagios restarted successfully");
-				}
-			});
+			if (err) {
+        return console.log(err);
+      } else {
+        setupMRTG(alias, function(){
+          exec("service nagios3 restart", function(error, stdout, stderr){
+            if(error){
+              console.log("Error restarting nagios");
+            } else {
+              console.log("Nagios restarted successfully");
+            }
+          });
+        });
+      }
 		});
 	});
+}
+
+// Function to setup changes related to MRTG for a provided hostname, and generated alias.
+function setupMRTG(alias, hostname, cb) {
+  createRequiredFoldersForMRTG(function (){
+    createMRTGConfigFileForHost(alias, function(){
+
+    })
+  })
+}
+
+// Reads template config mrtg-config-template.cfg from config.mrtg_config_template_path
+// adds necessary folder paths and saves to config.mrtg_path as <alias>.cfg, for the
+// given hostname/alias
+function createMRTGConfigFileForHost(alias, cb) {
+  fs.readFile(config.mrtg_config_template_path+'mrtg-config-template.cfg', 'utf8', function (err,data) {
+    data = data.replace(/#HTML_DIR#/g, html_dir);
+    data = data.replace(/#IMAGE_DIR#/g, image_dir);
+    data = data.replace(/#LOG_DIR#/g, log_dir);
+
+    var host_config_file = config.mrtg_path+alias+'.cfg';
+    fs.writeFile(host_config_file, data, 'utf8', function (err) {
+      if (err) {
+        return console.log(err);
+      } else {
+        console.log(host_config_file + " created.")
+        cb()
+      }
+    })
+  })
+}
+
+// Creates three folders required by MRTG
+// 1) A folder by alias name at config.mrtg_config_folder_path
+// 2) A folder named images inside the alias folder
+// 3) A folder named log inside the alias folder
+function createRequiredFoldersForMRTG(cb) {
+  var html_dir = config.mrtg_config_html_folder_path;
+  var image_dir = main_folder_path+"/"+images;
+  var log_dir = main_folder_path+"/"+log;
+
+  exec("mkdir "+html_dir), function(error, stdout, stderr){
+    if(error) throw error;
+    console.log("Created "+main_folder_path);
+
+    exec("mkdir "+image_dir), function(error, stdout, stderr){
+      if(error) throw error;
+      console.log("Created "+images_folder_path);
+
+      exec("mkdir "+log_dir), function(error, stdout, stderr){
+        if(error) throw error;
+        console.log("Created "+log_folder_path);
+
+        cb();
+      }      
+    }      
+  }
+}
+
+function writeToSidePhp(alias, domain, cb) {
+
+  // side.php requires url and alias to be displayed in Nagios.
+
+  // URL Format-> http://#DOMAIN_NAME#/html/mrtg/#ALIAS#/index.html
+  var url = config.mrtg_host_url;
+  url = url.replace(/#DOMAIN_NAME#/g,domain)
+  url = url.replace(/#ALIAS#/g,alias)
+
+  // Reading existing content from side.php
+  // Side placeholder data format-> <li><a href="#URL#" target="<?php echo $link_target;?>">#ALIAS#</a></li>
+  var side_content_placeholder_path = config.mrtg_config_template_path+"side-content-placeholder-data.html";
+  fs.readFile(side_content_placeholder_path, 'utf8', function (err,data) {
+    data = data.replace(/#URL#/g, url)
+    data = data.replace(/#ALIAS#/g, alias)
+
+    // Writing to side.php after including link to newly added host
+    var side_php_path = config.mrtg_side_php_path;
+    fs.readFile(side_php_path, 'utf8', function (err,sidePhpData) {
+      sidePhpData = sidePhpData.replace(/<!#MRTG#>/g, "<!#MRTG#>"+data);
+      fs.writeFile(host_config_file, sidePhpData, 'utf8', function (err) {
+        console.log(side_php_path + " overridden.")
+      }
+    }
+  }
 }
