@@ -81,30 +81,12 @@ function configNagios(domain, alias){
 
 // Function to setup changes related to MRTG for a provided hostname, and generated alias.
 function setupMRTG(alias, hostname, cb) {
+  console.out("***** Starting MRTG config *****")
   createRequiredFoldersForMRTG(function (){
     createMRTGConfigFileForHost(alias, function(){
-
-    })
-  })
-}
-
-// Reads template config mrtg-config-template.cfg from config.mrtg_config_template_path
-// adds necessary folder paths and saves to config.mrtg_path as <alias>.cfg, for the
-// given hostname/alias
-function createMRTGConfigFileForHost(alias, cb) {
-  fs.readFile(config.mrtg_config_template_path+'mrtg-config-template.cfg', 'utf8', function (err,data) {
-    data = data.replace(/#HTML_DIR#/g, html_dir);
-    data = data.replace(/#IMAGE_DIR#/g, image_dir);
-    data = data.replace(/#LOG_DIR#/g, log_dir);
-
-    var host_config_file = config.mrtg_path+alias+'.cfg';
-    fs.writeFile(host_config_file, data, 'utf8', function (err) {
-      if (err) {
-        return console.log(err);
-      } else {
-        console.log(host_config_file + " created.")
-        cb()
-      }
+      writeToSidePhp(alias, domain, function(){
+        console.out("***** MRTG setup complete *****")
+      })
     })
   })
 }
@@ -134,6 +116,31 @@ function createRequiredFoldersForMRTG(cb) {
       }      
     }      
   }
+}
+
+// Reads template config mrtg-config-template.cfg from config.mrtg_config_template_path
+// adds necessary folder paths and saves to config.mrtg_path as <alias>.cfg, for the
+// given hostname/alias
+function createMRTGConfigFileForHost(alias, cb) {
+
+  // Read the template config file from config.mrtg_config_template_path, and replace
+  // variables #HTML_DIR#, #IMAGE_DIR# and #LOG_DIR# with appropriate folder paths
+  fs.readFile(config.mrtg_config_template_path+'mrtg-config-template.cfg', 'utf8', function (err,data) {
+    data = data.replace(/#HTML_DIR#/g, html_dir);
+    data = data.replace(/#IMAGE_DIR#/g, image_dir);
+    data = data.replace(/#LOG_DIR#/g, log_dir);
+
+    // Write the resulting config data to a new file at config.mrtg_path named after the host alias.
+    var host_config_file = config.mrtg_path+alias+'.cfg';
+    fs.writeFile(host_config_file, data, 'utf8', function (err) {
+      if (err) {
+        return console.log(err);
+      } else {
+        console.log(host_config_file + " created.")
+        cb()
+      }
+    })
+  })
 }
 
 function writeToSidePhp(alias, domain, cb) {
