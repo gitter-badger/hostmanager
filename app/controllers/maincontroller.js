@@ -171,7 +171,7 @@ function writeToSidePhp(alias, domain, cb) {
     var side_php_path = config.mrtg_side_php_path;
     fs.readFile(side_php_path, 'utf8', function (err,sidePhpData) {
       sidePhpData = sidePhpData.replace(/<!#MRTG#>/g, "<!#MRTG#>"+data);
-      fs.writeFile(host_config_file, sidePhpData, 'utf8', function (err) {
+      fs.writeFile(side_php_path, sidePhpData, 'utf8', function (err) {
         console.log(side_php_path + " overridden.")
       })
     })
