@@ -165,7 +165,7 @@ function writeToSidePhp(alias, domain, cb) {
       sidePhpData = sidePhpData.replace(/<!#MRTG#>/g, "<!#MRTG#>"+data);
       fs.writeFile(host_config_file, sidePhpData, 'utf8', function (err) {
         console.log(side_php_path + " overridden.")
-      }
-    }
-  }
+      })
+    })
+  })
 }
