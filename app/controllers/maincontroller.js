@@ -123,7 +123,7 @@ function createRequiredFoldersForMRTG(alias, cb) {
   })
 }
 
-// Reads template config mrtg-config-template.cfg from config.mrtg_config_template_path
+// Reads template config mrtg-charts-template.cfg from config.mrtg_config_template_path
 // adds necessary folder paths and saves to config.mrtg_path as <alias>.cfg, for the
 // given hostname/alias
 function createMRTGConfigFileForHost(alias, cb) {
@@ -174,6 +174,27 @@ function writeToSidePhp(alias, domain, cb) {
       sidePhpData = sidePhpData.replace(/<!#MRTG#>/g, "<!#MRTG#>"+data);
       fs.writeFile(side_php_path, sidePhpData, 'utf8', function (err) {
         console.log(side_php_path + " overridden.")
+        cb()
+      })
+    })
+  })
+}
+
+function writeToMRTGShellFile(alias, cb) {
+
+  // mrtg.sh file requires setup for various hosts. Reading existing content from mrtg.sh
+  // Side placeholder data format->
+  // /usr/bin/indexmaker --title="#ALIAS# status" /opt/mrtg/#ALIAS#.cfg > /var/www/html/mrtg/#ALIAS#/index.html
+  var mrtg_placeholder_data_file = config.mrtg_config_template_path+"mrtg-config-placeholder-data.html";
+  fs.readFile(mrtg_placeholder_data_file, 'utf8', function (err,data) {
+    data = data.replace(/#ALIAS#/g, alias)
+
+    // Writing to mrtg.sh after including setup details for new host
+    var mrtg_sh_file = config.mrtg_path+"mrtg.sh";
+    fs.readFile(mrtg_sh_file, 'utf8', function (err,mrtgShFileData) {
+      mrtgShFileData = mrtgShFileData.replace(/#MRTG_LIST#/g, "#MRTG_LIST#\n"+data);
+      fs.writeFile(mrtg_sh_file, mrtgShFileData, 'utf8', function (err) {
+        console.log(mrtg_sh_file + " overridden.")
         cb()
       })
     })
