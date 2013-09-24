@@ -83,10 +83,14 @@ function configNagios(domain, alias){
 function setupMRTG(alias, domain, cb) {
   console.log("***** Starting MRTG config *****")
   createRequiredFoldersForMRTG(alias, function (){
-    createMRTGConfigFileForHost(alias, function(){
+    createMRTGConfigFileForHost(alias, domain, function(){
       writeToSidePhp(alias, domain, function(){
-        console.log("***** MRTG setup complete *****")
-        cb()
+        exec("bash "+config.mrtg_path+"runMRTG.sh", function(error, stdout, stderr){
+	  if(error) throw error;
+	  console.log("***** MRTG setup complete *****")
+
+  	  cb();
+        })    
       })
     })
   })
@@ -126,18 +130,22 @@ function createRequiredFoldersForMRTG(alias, cb) {
 // Reads template config mrtg-charts-template.cfg from config.mrtg_config_template_path
 // adds necessary folder paths and saves to config.mrtg_path as <alias>.cfg, for the
 // given hostname/alias
-function createMRTGConfigFileForHost(alias, cb) {
+function createMRTGConfigFileForHost(alias, domain, cb) {
 
+  var filename = domain.replace(/\./g,'_');
   var html_dir = config.mrtg_config_html_folder_path+alias;
   var image_dir = html_dir+"/images";
   var log_dir = html_dir+"/log";
 
   // Read the template config file from config.mrtg_config_template_path, and replace
   // variables #HTML_DIR#, #IMAGE_DIR# and #LOG_DIR# with appropriate folder paths
-  fs.readFile(config.mrtg_config_template_path+'mrtg-config-template.cfg', 'utf8', function (err,data) {
+  // eg. iu_cloud_acetravels_com_template.cfg
+  fs.readFile(config.mrtg_config_template_path+filename+'_template.cfg', 'utf8', function (err,data) {
     data = data.replace(/#HTML_DIR#/g, html_dir);
     data = data.replace(/#IMAGE_DIR#/g, image_dir);
     data = data.replace(/#LOG_DIR#/g, log_dir);
+    data = data.replace(/#ALIAS#/g, alias);
+    data = data.replace(/#DOMAIN_NAME#/g, hostname);
 
     // Write the resulting config data to a new file at config.mrtg_path named after the host alias.
     var host_config_file = config.mrtg_path+alias+'.cfg';
@@ -190,7 +198,7 @@ function writeToMRTGShellFile(alias, cb) {
     data = data.replace(/#ALIAS#/g, alias)
 
     // Writing to mrtg.sh after including setup details for new host
-    var mrtg_sh_file = config.mrtg_path+"mrtg.sh";
+    var mrtg_sh_file = config.mrtg_path+"runMRTG.sh";
     fs.readFile(mrtg_sh_file, 'utf8', function (err,mrtgShFileData) {
       mrtgShFileData = mrtgShFileData.replace(/#MRTG_LIST#/g, "#MRTG_LIST#\n"+data);
       fs.writeFile(mrtg_sh_file, mrtgShFileData, 'utf8', function (err) {
