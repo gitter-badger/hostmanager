@@ -179,7 +179,7 @@ function writeToSidePhp(alias, domain, cb) {
     // Writing to side.php after including link to newly added host
     var side_php_path = config.mrtg_side_php_path;
     fs.readFile(side_php_path, 'utf8', function (err,sidePhpData) {
-      sidePhpData = sidePhpData.replace(/<!#MRTG#>/g, "<!#MRTG#>"+data);
+      sidePhpData = sidePhpData.replace(/<!#MRTG#>/g, "<!#MRTG#>\n"+data);
       fs.writeFile(side_php_path, sidePhpData, 'utf8', function (err) {
         console.log(side_php_path + " overridden.")
         cb()
