@@ -1,0 +1,2 @@
+env LANG=C /usr/bin/nice -n 19 /usr/bin/mrtg /opt/mrtg/#ALIAS#.cfg
+/usr/bin/indexmaker --title="#ALIAS# status" /opt/mrtg/#ALIAS#.cfg > /var/www/html/mrtg/#ALIAS#/index.html

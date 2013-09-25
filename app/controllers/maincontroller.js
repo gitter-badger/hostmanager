@@ -139,6 +139,10 @@ function createMRTGConfigFileForHost(alias, domain, cb) {
   var image_dir = html_dir+"/images";
   var log_dir = html_dir+"/log";
 
+  console.log("Alias: "+alias);
+  console.log("Domain: "+domain);
+  console.log("Filename: "+filename);
+
   // Read the template config file from config.mrtg_config_template_path, and replace
   // variables #HTML_DIR#, #IMAGE_DIR# and #LOG_DIR# with appropriate folder paths
   // eg. iu_cloud_acetravels_com_template.cfg
