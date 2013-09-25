@@ -54,15 +54,15 @@ exports.list = function(req, res){
 }
 
 function configNagios(domain, alias){
-	var filename = domain.replace(/\./g,'_');
-	fs.readFile(config.nagios_config_template_path+filename+'.cfg', 'utf8', function (err,data) {
-		if (err) {
-			return console.log(err);
-		}
-		data = data.replace(/#DOMAIN_NAME#/g, domain);
-		data = data.replace(/#ALIAS#/g,alias);	
-		fs.writeFile(config.nagios_config_path+alias+'.cfg', data, 'utf8', function (err) {
-			if (err) {
+  var filename = domain.replace(/\./g,'_');
+  fs.readFile(config.nagios_config_template_path+filename+'.cfg', 'utf8', function (err,data) {
+    if (err) {
+      return console.log(err);
+    }
+    data = data.replace(/#DOMAIN_NAME#/g, domain);
+    data = data.replace(/#ALIAS#/g,alias);	
+    fs.writeFile(config.nagios_config_path+alias+'.cfg', data, 'utf8', function (err) {
+      if (err) {
         return console.log(err);
       } else {
         setupMRTG(alias, domain, function(){
@@ -75,8 +75,8 @@ function configNagios(domain, alias){
           });
         });
       }
-		});
-	});
+    });
+  });
 }
 
 // Function to setup changes related to MRTG for a provided hostname, and generated alias.
@@ -85,11 +85,13 @@ function setupMRTG(alias, domain, cb) {
   createRequiredFoldersForMRTG(alias, function (){
     createMRTGConfigFileForHost(alias, domain, function(){
       writeToSidePhp(alias, domain, function(){
-        exec("bash "+config.mrtg_path+"runMRTG.sh", function(error, stdout, stderr){
-	  if(error) throw error;
-	  console.log("***** MRTG setup complete *****")
+        writeToMRTGShellFile(alias, function() {
+          exec("bash "+config.mrtg_path+"runMRTG.sh", function(error, stdout, stderr){
+  	    if(error) throw error;
+	    console.log("***** MRTG setup complete *****")
 
-  	  cb();
+  	    cb();
+          })
         })    
       })
     })
