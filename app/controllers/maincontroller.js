@@ -145,7 +145,7 @@ function createMRTGConfigFileForHost(alias, domain, cb) {
     data = data.replace(/#IMAGE_DIR#/g, image_dir);
     data = data.replace(/#LOG_DIR#/g, log_dir);
     data = data.replace(/#ALIAS#/g, alias);
-    data = data.replace(/#DOMAIN_NAME#/g, hostname);
+    data = data.replace(/#DOMAIN_NAME#/g, domain);
 
     // Write the resulting config data to a new file at config.mrtg_path named after the host alias.
     var host_config_file = config.mrtg_path+alias+'.cfg';
