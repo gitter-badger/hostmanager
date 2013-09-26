@@ -19,6 +19,7 @@ exports.getHostname = function(req, res){
   var public_dns = q.public_dns;
 
   console.log("Domain: "+domain)
+  console.log("Public DNS: "+public_dns);
   Hostname.findOne({"domain":domain}, function(err, data){
     if(err) throw err;
     console.log("Domain data: "+JSON.stringify(data));
