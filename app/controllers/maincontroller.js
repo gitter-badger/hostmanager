@@ -13,8 +13,11 @@ var exec = require('child_process').exec;
 exports.getHostname = function(req, res){
   var q = url.parse(req.url,true).query;
   console.log("Q: "+JSON.stringify(q));
+
   var domain = q.domain;
   var name = domain.split(".")[0];
+  var public_dns = q.public_dns;
+
   console.log("Domain: "+domain)
   Hostname.findOne({"domain":domain}, function(err, data){
     if(err) throw err;
@@ -41,7 +44,7 @@ exports.getHostname = function(req, res){
     var alias = name+next;
     var hostname = alias+"."+domain;
     console.log("Output: "+hostname);
-    configNagios(domain, alias);
+    configNagios(domain, public_dns, alias);
     res.write(hostname);
     res.end();
   })
@@ -53,19 +56,19 @@ exports.list = function(req, res){
   })
 }
 
-function configNagios(domain, alias){
+function configNagios(domain, public_dns, alias){
   var filename = domain.replace(/\./g,'_');
   fs.readFile(config.nagios_config_template_path+filename+'.cfg', 'utf8', function (err,data) {
     if (err) {
       return console.log(err);
     }
-    data = data.replace(/#DOMAIN_NAME#/g, domain);
+    data = data.replace(/#DOMAIN_NAME#/g, public_dns);
     data = data.replace(/#ALIAS#/g,alias);	
     fs.writeFile(config.nagios_config_path+alias+'.cfg', data, 'utf8', function (err) {
       if (err) {
         return console.log(err);
       } else {
-        setupMRTG(alias, domain, function(){
+        setupMRTG(alias, domain, public_dns, function(){
           exec("service nagios3 restart", function(error, stdout, stderr){
             if(error){
               console.log("Error restarting nagios");
@@ -80,11 +83,11 @@ function configNagios(domain, alias){
 }
 
 // Function to setup changes related to MRTG for a provided hostname, and generated alias.
-function setupMRTG(alias, domain, cb) {
+function setupMRTG(alias, domain, public_dns, cb) {
   console.log("***** Starting MRTG config *****")
   createRequiredFoldersForMRTG(alias, function (){
-    createMRTGConfigFileForHost(alias, domain, function(){
-      writeToSidePhp(alias, domain, function(){
+    createMRTGConfigFileForHost(alias, domain, public_dns, function(){
+      writeToSidePhp(alias, domain, public_dns, function(){
         writeToMRTGShellFile(alias, function() {
           exec("bash "+config.mrtg_path+"runMRTG.sh", function(error, stdout, stderr){
   	    if(error) throw error;
@@ -132,7 +135,7 @@ function createRequiredFoldersForMRTG(alias, cb) {
 // Reads template config mrtg-charts-template.cfg from config.mrtg_config_template_path
 // adds necessary folder paths and saves to config.mrtg_path as <alias>.cfg, for the
 // given hostname/alias
-function createMRTGConfigFileForHost(alias, domain, cb) {
+function createMRTGConfigFileForHost(alias, domain, public_dns, cb) {
 
   var filename = domain.replace(/\./g,'_');
   var html_dir = config.mrtg_config_html_folder_path+alias;
@@ -147,7 +150,7 @@ function createMRTGConfigFileForHost(alias, domain, cb) {
     data = data.replace(/#IMAGE_DIR#/g, image_dir);
     data = data.replace(/#LOG_DIR#/g, log_dir);
     data = data.replace(/#ALIAS#/g, alias);
-    data = data.replace(/#DOMAIN_NAME#/g, domain);
+    data = data.replace(/#DOMAIN_NAME#/g, public_dns);
 
     // Write the resulting config data to a new file at config.mrtg_path named after the host alias.
     var host_config_file = config.mrtg_path+alias+'.cfg';
@@ -162,7 +165,7 @@ function createMRTGConfigFileForHost(alias, domain, cb) {
   })
 }
 
-function writeToSidePhp(alias, domain, cb) {
+function writeToSidePhp(alias, domain, public_dns, cb) {
 
   // side.php requires url and alias to be displayed in Nagios.
 
