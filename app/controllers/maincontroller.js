@@ -17,6 +17,7 @@ exports.getHostname = function(req, res){
   var domain = q.domain;
   var name = domain.split(".")[0];
   var public_dns = q.public_dns;
+  var instance_id = q.instance_id;
 
   console.log("Domain: "+domain)
   console.log("Public DNS: "+public_dns);
@@ -45,9 +46,13 @@ exports.getHostname = function(req, res){
     var alias = name+next;
     var hostname = alias+"."+domain;
     console.log("Output: "+hostname);
-    configNagios(domain, public_dns, alias);
-    res.write(hostname);
-    res.end();
+    configNagios(domain, public_dns, alias, function(){
+      setEC2InstanceTag(alias, instance_id, function(){
+        console.log("Host configuration complete for "+hostname);
+        res.write(hostname);
+        res.end();
+      });
+    });
   })
 }
 
@@ -57,24 +62,28 @@ exports.list = function(req, res){
   })
 }
 
-function configNagios(domain, public_dns, alias){
+function configNagios(domain, public_dns, alias, cb){
   var filename = domain.replace(/\./g,'_');
   fs.readFile(config.nagios_config_template_path+filename+'.cfg', 'utf8', function (err,data) {
     if (err) {
-      return console.log(err);
+      console.log("Error reading from Nagios config template file");
+      res.end();
     }
     data = data.replace(/#DOMAIN_NAME#/g, public_dns);
     data = data.replace(/#ALIAS#/g,alias);	
     fs.writeFile(config.nagios_config_path+alias+'.cfg', data, 'utf8', function (err) {
       if (err) {
-        return console.log(err);
+        console.log("Error writing to nagios config file");
+        res.end();
       } else {
         setupMRTG(alias, domain, public_dns, function(){
           exec("service nagios3 restart", function(error, stdout, stderr){
             if(error){
               console.log("Error restarting nagios");
+              res.end();
             } else {
               console.log("Nagios restarted successfully");
+              cb();
             }
           });
         });
@@ -91,10 +100,13 @@ function setupMRTG(alias, domain, public_dns, cb) {
       writeToSidePhp(alias, domain, public_dns, function(){
         writeToMRTGShellFile(alias, function() {
           exec("bash "+config.mrtg_path+"runMRTG.sh", function(error, stdout, stderr){
-  	    if(error) throw error;
-	    console.log("***** MRTG setup complete *****")
-
-  	    cb();
+            if(error){
+              console.log("Error executing runMRTG.sh");
+              res.end();
+            }else{
+	      console.log("***** MRTG setup complete *****")
+              cb();
+            }
           })
         })    
       })
@@ -212,4 +224,16 @@ function writeToMRTGShellFile(alias, cb) {
       })
     })
   })
+}
+
+function setEC2InstanceTag(alias, instance_id, cb) {
+  exec("ec2-create-tags "+instance_id+" --tags Name="+alias, function(error, stdout, stderr){
+    if(error){
+      console.log("Error setting EC2 instance name to "+alias);
+    } else {
+      console.log("EC2 instance ID has been set to '"+alias+"'");
+      cb();
+    }
+  });
+  
 }
