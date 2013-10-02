@@ -223,7 +223,7 @@ function writeToMRTGShellFile(alias, cb) {
 }
 
 function setEC2InstanceTag(alias, instance_id, cb) {
-  exec("ec2-create-tags "+instance_id+" --tags Name="+alias, function(error, stdout, stderr){
+  exec("ec2-create-tags "+instance_id+" --tag Name="+alias, function(error, stdout, stderr){
     if(error){
       console.log("Error setting EC2 instance name to "+alias);
     } else {
