@@ -155,7 +155,7 @@ function getTerminatedInstances(cb){
           results[key]=value;
         }
       });
-      console.log("Terminated instances list "+results);
+      console.log("Terminated instances list "+JSON.stringify(results));
       cb(results);
     }
   })
@@ -173,12 +173,18 @@ function getInstanceAliasMap(cb){
         var parts = line.split(' ');
         key = parts[0];
         value = parts[1];
-        console.log("Key: "+key+", value: "+value);
-        if(key!="" && value!=""){
-          results[key] = value;
+        var matches = value.match([a-z\-]+[0-9]+);
+        console.log("Matches: "+matches);
+        if(matches.length>0){
+	        if(key!="" && value!=""){
+	          results[key] = value;
+        		console.log("Key: "+key+", value: "+value+" [PASS]");
+	        }else{
+        		console.log("Key: "+key+", value: "+value)+" [FAIL]";
+	        }
         }
       });
-      console.log("Instance ID to alias mapping:\n"+results);
+      console.log("Instance ID to alias mapping:\n"+JSON.stringify(results));
       cb(results);
     }
   })
