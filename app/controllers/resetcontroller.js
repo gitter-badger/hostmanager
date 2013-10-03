@@ -56,8 +56,8 @@ function cleanupSidePHPContent(alias, cb){
       console.log("Could not generate temporary file from "+side_php_path);
       cb();
     }else{
-      var command2 = "cp /tmp/side.php > "+side_php_path;
-      console.log("running command: "+command2);
+      var command2 = "cp /tmp/side.php "+side_php_path;
+      console.log("running command2: "+command2);
 
       exec(command2, function(error, stdout, stderr){
         if(error){
