@@ -66,7 +66,7 @@ function configNagios(domain, public_dns, alias, cb){
       console.log("Error reading from Nagios config template file");
     }
     data = data.replace(/#DOMAIN_NAME#/g, public_dns);
-    data = data.replace(/#ALIAS#/g,alias);	
+    data = data.replace(/#ALIAS#/g,alias);        
     fs.writeFile(config.nagios_config_path+alias+'.cfg', data, 'utf8', function (err) {
       if (err) {
         console.log("Error writing to nagios config file");
@@ -97,7 +97,7 @@ function setupMRTG(alias, domain, public_dns, cb) {
             if(error){
               console.log("Error executing runMRTG.sh");
             }else{
-	      console.log("***** MRTG setup complete *****")
+              console.log("***** MRTG setup complete *****")
               cb();
             }
           })
@@ -189,7 +189,7 @@ function writeToSidePhp(alias, domain, public_dns, cb) {
     // Writing to side.php after including link to newly added host
     var side_php_path = config.mrtg_side_php_path;
     fs.readFile(side_php_path, 'utf8', function (err,sidePhpData) {
-      sidePhpData = sidePhpData.replace(/<!#MRTG#>/g, "<!#MRTG#>\n<!#"+alias+"#>\n"+data+"\n<!#"+alias+"#>");
+      sidePhpData = sidePhpData.replace(/<!#MRTG#>/g, "<!#MRTG#>\n<!#"+alias+"-start#>\n"+data+"\n<!#"+alias+"-end#>");
       fs.writeFile(side_php_path, sidePhpData, 'utf8', function (err) {
         console.log(side_php_path + " overridden.")
         cb()
@@ -210,7 +210,7 @@ function writeToMRTGShellFile(alias, cb) {
     // Writing to mrtg.sh after including setup details for new host
     var mrtg_sh_file = config.mrtg_path+"runMRTG.sh";
     fs.readFile(mrtg_sh_file, 'utf8', function (err,mrtgShFileData) {
-      mrtgShFileData = mrtgShFileData.replace(/#MRTG_LIST#/g, "#MRTG_LIST#\n#"+alias+"#\n"+data+"\n#"+alias+"#");
+      mrtgShFileData = mrtgShFileData.replace(/#MRTG_LIST#/g, "#MRTG_LIST#\n#"+alias+"-start#\n"+data+"\n#"+alias+"-end#");
       fs.writeFile(mrtg_sh_file, mrtgShFileData, 'utf8', function (err) {
         console.log(mrtg_sh_file + " overridden.")
         cb()
