@@ -14,24 +14,26 @@ var exec = require('child_process').exec;
 exports.cleanup = function(req, res){
   console.log("Starting configuration cleanup")
   getTerminatedInstanceTOAliasMap(function(map){
-    Object.keys(map).forEach(function(key){
-      var alias=map[key];
-      cleanupSidePHPContent(alias, function(){
-        cleanupRunMRTGContent(alias, function(){
-          deleteMRTGFolderForAlias(alias, function(){
-            deleteMRTGCfgFileForAlias(alias, function(){
-              deleteNagiosCfgFileForAlias(alias, function(){
-                console.log("Finished deleting configuration for "+alias)
-              })
-            })
-          })
-        })
-      })
-    });
-    restartNagios(function(){
-	    console.log("Finished cleanup for terminated instances");
-	    res.end("Done!")
-    })
+  	if(JSON.stringify(map)!="{}"){
+	    Object.keys(map).forEach(function(key){
+	      var alias=map[key];
+	      cleanupSidePHPContent(alias, function(){
+	        cleanupRunMRTGContent(alias, function(){
+	          deleteMRTGFolderForAlias(alias, function(){
+	            deleteMRTGCfgFileForAlias(alias, function(){
+	              deleteNagiosCfgFileForAlias(alias, function(){
+	                console.log("Finished deleting configuration for "+alias)
+	              })
+	            })
+	          })
+	        })
+	      })
+	    });
+	    restartNagios(function(){
+		    console.log("Finished cleanup for terminated instances");
+		    res.end("Done!")
+	    })
+	  }
   });
 }
 
