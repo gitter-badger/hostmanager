@@ -48,15 +48,26 @@ function cleanupSidePHPContent(alias, cb){
   var side_php_path = config.mrtg_side_php_path;
   console.log("Side.php cleanup start - "+side_php_path);
 
-  var command = "sed '/<!#"+alias+"-start#>/,/<!#"+alias+"-end#>/d' "+side_php_path+" > "+side_php_path;
-  console.log("running command: "+command);
+  var command1 = "sed '/<!#"+alias+"-start#>/,/<!#"+alias+"-end#>/d' "+side_php_path+" > /tmp/side.php";
+  console.log("running command1: "+command1);
 
-  exec(command, function(error, stdout, stderr){
+  exec(command1, function(error, stdout, stderr){
     if(error){
-      console.log("Error cleaning up side.php cleanup for - "+side_php_path);
-    }else{
-      console.log("Side.php cleanup end - "+side_php_path);
+      console.log("Could not generate temporary file from "+side_php_path);
       cb();
+    }else{
+      var command2 = "cp /tmp/side.php > "+side_php_path;
+      console.log("running command: "+command2);
+
+      exec(command2, function(error, stdout, stderr){
+        if(error){
+          console.log("Could not restore from temporary side.php to "+side_php_path);
+          cb();
+        }else{
+          console.log("Side.php cleanup end - "+side_php_path);
+          cb();
+        }
+      })
     }
   })
 }
@@ -74,15 +85,26 @@ function cleanupRunMRTGContent(alias, cb){
   var mrtg_sh_file = config.mrtg_path+"runMRTG.sh";
   console.log("runMRTG.sh cleanup start - "+mrtg_sh_file);
 
-  var command = "sed '/#"+alias+"-start#/,/#"+alias+"-end#/d' "+mrtg_sh_file+" > "+mrtg_sh_file;
-  console.log("running command: "+command);
+  var command1 = "sed '/#"+alias+"-start#/,/#"+alias+"-end#/d' "+mrtg_sh_file+" > /tmp/runMRTG.sh";
+  console.log("running command1: "+command1);
   
-  exec(command, function(error, stdout, stderr){
+  exec(command1, function(error, stdout, stderr){
     if(error){
-      console.log("Error cleaning up runMRTG.sh configuration for "+alias);
-    }else{
-      console.log("runMRTG.sh cleanup end - "+mrtg_sh_file);
+      console.log("Could not generate temporary file from "+mrtg_sh_file);
       cb();
+    }else{
+      var command2 = "cp /tmp/runMRTG.sh "+mrtg_sh_file;
+      console.log("running command2: "+command2);
+      
+      exec(command2, function(error, stdout, stderr){
+        if(error){
+          console.log("Could not restore from temporary runMRTG.sh to "+mrtg_sh_file);
+          cb();
+        }else{
+          console.log("runMRTG.sh cleanup end - "+mrtg_sh_file);
+          cb();
+        }
+      })
     }
   })
 }
