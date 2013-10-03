@@ -1,6 +1,6 @@
 var exec = require('child_process').exec;
 
-function setup(){  
+exports.setup = function(){  
   exec("crontab -l | grep cleanup", function(error, stdout, stderr){
     if(error){
       console.log("Error listing crontab");
