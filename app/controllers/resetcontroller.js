@@ -173,7 +173,7 @@ function getInstanceAliasMap(cb){
         var parts = line.split(' ');
         key = parts[0];
         value = parts[1];
-        var matches = value.match([a-z\-]+[0-9]+);
+        var matches = value.match(/[a-z\-]+[0-9]+/);
         console.log("Matches: "+matches);
         if(matches.length>0){
 	        if(key!="" && value!=""){
