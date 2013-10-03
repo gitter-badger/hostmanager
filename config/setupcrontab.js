@@ -7,7 +7,7 @@ function setup(){
     } else {
       console.log("Stdout: "+stdout);
       if(stdout==null || stdout==""){
-        exec("(crontab -l ; echo "*/5 * * * * root curl http://config-server.cloud.acetravels.com:3000/cleanup") | crontab -", function(error, stdout, stderr){
+        exec("(crontab -l ; echo \"*/5 * * * * root curl http://config-server.cloud.acetravels.com:3000/cleanup\") | crontab -", function(error, stdout, stderr){
           if(error){
 	        console.log("Could not setup crontab for periodic cleanup");
 	      }else{
