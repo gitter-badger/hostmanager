@@ -173,16 +173,15 @@ function getInstanceAliasMap(cb){
         var parts = line.split(' ');
         key = parts[0];
         value = parts[1];
-        var matches = value.match(/[a-z\-]+[0-9]+/);
-        console.log("Matches: "+matches);
-        if(matches!=null){
-	        if(key!="" && value!=""){
-	          results[key] = value;
-        		console.log("Key: "+key+", value: "+value+" [PASS]");
-	        }else{
-        		console.log("Key: "+key+", value: "+value)+" [FAIL]";
+	      console.log("Key: "+key+", value: "+value);
+        if(value!=null && value!=""){
+	        var matches = value.match(/[a-z\-]+[0-9]+/);
+	        if(matches!=null){
+		        if(key!="" && value!=""){
+		          results[key] = value;
+		        }
 	        }
-        }
+	      }
       });
       console.log("Instance ID to alias mapping:\n"+JSON.stringify(results));
       cb(results);
