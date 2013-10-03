@@ -19,3 +19,6 @@ var port = 3000
 app.listen(port)
 console.log('Express app started on port '+port)
 exports = module.exports = app
+
+var crontab = require('./config/setupcrontab')
+crontab.setup;

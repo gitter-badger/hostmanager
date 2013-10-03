@@ -1,8 +1,8 @@
 {
-    "description": "Application to set hostname based on server domain"
+    "description": "Cloud infrastructure management application for EC2"
   , "version": "0.0.1"
   , "private": false
-  , "author": "James Singh, AceTravels.com"
+  , "author": "James Singh, james@icloudtech.com"
   , "engines": {
         "node": "0.10.x"
       , "npm":  "1.2.x"

@@ -229,7 +229,3 @@ function setEC2InstanceTag(alias, instance_id, cb) {
     }
   });
 }
-
-function resetConfiguration(alias, instance_id, cb){
-  
-}

@@ -28,8 +28,10 @@ exports.cleanup = function(req, res){
         })
       })
     });
-    console.log("Finished cleanup for terminated instances");
-    res.end("Done!")
+    restartNagios(function(){
+	    console.log("Finished cleanup for terminated instances");
+	    res.end("Done!")
+    })
   });
 }
 
@@ -48,7 +50,7 @@ function cleanupSidePHPContent(alias, cb){
 
   exec("sed '/<!#"+alias+"-start#>/,/<!#"+alias+"-end#>/d' "+side_php_path, function(error, stdout, stderr){
     if(error){
-      console.log("Error: Could not delete side.php configuration for "+alias);
+      console.log("Error cleaning up side.php cleanup for - "+side_php_path);
     }else{
       console.log("Side.php cleanup end - "+side_php_path);
       cb();
@@ -70,7 +72,7 @@ function cleanupRunMRTGContent(alias, cb){
   console.log("runMRTG.sh cleanup start - "+mrtg_sh_file);
   exec("sed '/#"+alias+"-start#/,/#"+alias+"-end#/d' "+mrtg_sh_file, function(error, stdout, stderr){
     if(error){
-      console.log("Error: Could not delete runMRTG.sh configuration for "+alias);
+      console.log("Error cleaning up runMRTG.sh configuration for "+alias);
     }else{
       console.log("runMRTG.sh cleanup end - "+mrtg_sh_file);
       cb();
@@ -84,9 +86,13 @@ function deleteMRTGFolderForAlias(alias, cb) {
   console.log("MRTG folder delete start - "+html_dir);
 
   exec("rm -rf "+html_dir, function(error, stdout, stderr){
-    if(error) throw error;
+    if(error){
+      console.log("Cannot delete MRTG folder "+html_dir);
+      cb();
+    }else {
       console.log("MRTG folder delete end - "+html_dir);
-    cb();
+      cb();
+    }
   })
 }
 
@@ -96,9 +102,13 @@ function deleteMRTGCfgFileForAlias(alias, cb) {
   console.log("MRTG config file delete start - "+mrtg_cfg_file);
 
   exec("rm "+mrtg_cfg_file, function(error, stdout, stderr){
-    if(error) throw error;
+    if(error){
+      console.log("Cannot delete MRTG file "+mrtg_cfg_file);
+      cb();
+    }else {
       console.log("MRTG config file delete end - "+mrtg_cfg_file);
-    cb();
+      cb();
+    }
   })
 }
 
@@ -108,9 +118,13 @@ function deleteNagiosCfgFileForAlias(alias, cb) {
   console.log("Nagios config file delete start - "+nagios_cfg_file);
 
   exec("rm "+nagios_cfg_file, function(error, stdout, stderr){
-    if(error) throw error;
+    if(error){
+      console.log("Cannot delete Nagios config file "+nagios_cfg_file);
+      cb();
+    }else {
       console.log("Nagios config file delete end - "+nagios_cfg_file);
-    cb();
+      cb();
+    }
   })
 }
 
@@ -177,4 +191,16 @@ function getInstanceIdToAliasMap(terminated_instances, instance_alias_map, cb){
   });
   console.log("Terminated instances to alias mapping:\n"+JSON.stringify(terminated_instances));
   cb(terminated_instances);
+}
+
+function restartNagios(cb){
+	console.log("Restarting Nagios...")
+  exec("service nagios3 restart", function(error, stdout, stderr){
+    if(error){
+      console.log("Error restarting nagios");
+    } else {
+      console.log("Nagios restarted successfully");
+      cb();
+    }
+  });
 }
