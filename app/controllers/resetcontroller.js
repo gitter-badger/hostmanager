@@ -15,17 +15,15 @@ exports.cleanup = function(req, res){
 /***************************************************************************/
 
 function getTerminatedInstanceTOAliasMap(cb){
-  getTerminatedInstances(function(terminated_instances){
-    console.log(terminated_instances);
-    getInstanceAliasMap(function(instance_alias_map){
-      console.log(instance_alias_map);
-        getInstanceIdToAliasMap(terminated_instances, instance_alias_map, function(map){
-          cb(map);
-        });
-      console.log("Complete");
-      res.end();
-    })
-  })
+	getTerminatedInstances(function(terminated_instances){
+		console.log(terminated_instances);
+		getInstanceAliasMap(function(instance_alias_map){
+		  	console.log(instance_alias_map);
+		    getInstanceIdToAliasMap(terminated_instances, instance_alias_map, function(map){
+		    	cb(map);
+		    });
+		})
+	})
 }
 
 function getTerminatedInstances(cb){
