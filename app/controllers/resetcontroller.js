@@ -4,12 +4,23 @@ var config = require('../../config/config')[env]
 var exec = require('child_process').exec;
 
 exports.cleanup = function(req, res){
+	getTerminatedInstanceTOAliasMap(function(map){
+		console.log("******************");
+		console.log(JSON.stringify(map));
+		res.json(map);
+	});
+}
+
+
+/***************************************************************************/
+
+function getTerminatedInstanceTOAliasMap(cb){
   getTerminatedInstances(function(terminated_instances){
     console.log(terminated_instances);
     getInstanceAliasMap(function(instance_alias_map){
       console.log(instance_alias_map);
         getInstanceIdToAliasMap(terminated_instances, instance_alias_map, function(map){
-          console.log(map);
+          cb(map);
         });
       console.log("Complete");
       res.end();
@@ -63,13 +74,9 @@ function getInstanceAliasMap(cb){
 }
 
 function getInstanceIdToAliasMap(terminated_instances, instance_alias_map, cb){
-  console.log("Terminated instances: "+terminated_instances);
-  console.log("Instance alias map: "+instance_alias_map);
-  console.log("TI length: "+terminated_instances.length);
   Object.keys(terminated_instances).forEach(function(key){
     terminated_instances[key]=instance_alias_map[key];
   });
   console.log(JSON.stringify(terminated_instances));
-  console.log("IA map length: "+instance_alias_map.length);
-  cb("Hello world");
+  cb(terminated_instances);
 }
