@@ -48,7 +48,8 @@ function cleanupSidePHPContent(alias, cb){
   var side_php_path = config.mrtg_side_php_path;
   console.log("Side.php cleanup start - "+side_php_path);
 
-  exec("sed '/<!#"+alias+"-start#>/,/<!#"+alias+"-end#>/d' "+side_php_path, function(error, stdout, stderr){
+  var command = "sed '/<!#"+alias+"-start#>/,/<!#"+alias+"-end#>/d' "+side_php_path+" > "+side_php_path;
+  exec(command, function(error, stdout, stderr){
     if(error){
       console.log("Error cleaning up side.php cleanup for - "+side_php_path);
     }else{
@@ -70,7 +71,9 @@ function cleanupSidePHPContent(alias, cb){
 function cleanupRunMRTGContent(alias, cb){
   var mrtg_sh_file = config.mrtg_path+"runMRTG.sh";
   console.log("runMRTG.sh cleanup start - "+mrtg_sh_file);
-  exec("sed '/#"+alias+"-start#/,/#"+alias+"-end#/d' "+mrtg_sh_file, function(error, stdout, stderr){
+  var command = "sed '/#"+alias+"-start#/,/#"+alias+"-end#/d' "+mrtg_sh_file+" > "+mrtg_sh_file;
+  console.log("running command: "+command)
+  exec(command, function(error, stdout, stderr){
     if(error){
       console.log("Error cleaning up runMRTG.sh configuration for "+alias);
     }else{

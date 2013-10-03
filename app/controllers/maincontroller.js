@@ -210,7 +210,7 @@ function writeToMRTGShellFile(alias, cb) {
     // Writing to mrtg.sh after including setup details for new host
     var mrtg_sh_file = config.mrtg_path+"runMRTG.sh";
     fs.readFile(mrtg_sh_file, 'utf8', function (err,mrtgShFileData) {
-      mrtgShFileData = mrtgShFileData.replace(/#MRTG_LIST#/g, "#MRTG_LIST#\n#"+alias+"-start#\n"+data+"\n#"+alias+"-end#");
+      mrtgShFileData = mrtgShFileData.replace(/#MRTG_LIST#/g, "#MRTG_LIST#\n#"+alias+"-start#\n"+data+"#"+alias+"-end#\n");
       fs.writeFile(mrtg_sh_file, mrtgShFileData, 'utf8', function (err) {
         console.log(mrtg_sh_file + " overridden.")
         cb()
